@@ -405,7 +405,7 @@ START_TEST(test_xmr_ge25519_check) {
 }
 END_TEST
 
-START_TEST(test_xmr_ge25519_scalarmult_base_wrapper) {
+START_TEST(test_xmr_trezor_ge25519_scalarmult_base_wrapper) {
   static const struct {
     char *sc;
     char *pt;
@@ -446,13 +446,13 @@ START_TEST(test_xmr_ge25519_scalarmult_base_wrapper) {
   for (size_t i = 0; i < (sizeof(tests) / sizeof(*tests)); i++) {
     expand256_modm(sc, fromhex(tests[i].sc), 32);
     ge25519_unpack_vartime(&pt, fromhex(tests[i].pt));
-    ge25519_scalarmult_base_wrapper(&pt2, sc);
+    trezor_ge25519_scalarmult_base_wrapper(&pt2, sc);
     ck_assert_int_eq(ge25519_eq(&pt, &pt2), 1);
   }
 }
 END_TEST
 
-START_TEST(test_xmr_ge25519_scalarmult) {
+START_TEST(test_xmr_trezor_ge25519_scalarmult) {
   static const struct {
     char *sc;
     char *pt;
@@ -502,7 +502,7 @@ START_TEST(test_xmr_ge25519_scalarmult) {
     expand256_modm(sc, fromhex(tests[i].sc), 32);
     ge25519_unpack_vartime(&pt, fromhex(tests[i].pt));
     ge25519_unpack_vartime(&pt2, fromhex(tests[i].pt2));
-    ge25519_scalarmult(&pt3, &pt, sc);
+    trezor_ge25519_scalarmult(&pt3, &pt, sc);
     ck_assert_int_eq(ge25519_eq(&pt3, &pt2), 1);
   }
 }
@@ -519,29 +519,29 @@ START_TEST(test_xmr_ge25519_ops) {
     set256_modm(s3, 8);
     set256_modm(s4, 2);
 
-    ge25519_scalarmult_base_niels(&a, ge25519_niels_base_multiples, s1);
-    ge25519_scalarmult_base_niels(&b, ge25519_niels_base_multiples, s2);
-    ge25519_scalarmult(&c, &a, s4);
-    ge25519_scalarmult(&c, &c, s4);
-    ge25519_scalarmult(&c, &c, s4);
+    trezor_ge25519_scalarmult_base_niels(&a, ge25519_niels_base_multiples, s1);
+    trezor_ge25519_scalarmult_base_niels(&b, ge25519_niels_base_multiples, s2);
+    trezor_ge25519_scalarmult(&c, &a, s4);
+    trezor_ge25519_scalarmult(&c, &c, s4);
+    trezor_ge25519_scalarmult(&c, &c, s4);
     ck_assert_int_eq(ge25519_eq(&c, &b), 1);
     ck_assert_int_eq(ge25519_eq(&a, &b), 0);
 
-    ge25519_scalarmult_base_wrapper(&a, s1);
+    trezor_ge25519_scalarmult_base_wrapper(&a, s1);
     ge25519_mul8(&b, &a);
-    ge25519_scalarmult_base_wrapper(&c, s2);
+    trezor_ge25519_scalarmult_base_wrapper(&c, s2);
     ck_assert_int_eq(ge25519_eq(&b, &c), 1);
 
-    ge25519_scalarmult(&d, &a, s3);
+    trezor_ge25519_scalarmult(&d, &a, s3);
     ck_assert_int_eq(ge25519_eq(&d, &c), 1);
 
     ge25519_copy(&a, &b);
     ge25519_neg_full(&b);
     ck_assert_int_eq(ge25519_eq(&b, &c), 0);
 
-    ge25519_add(&c, &a, &b, 0);
+    trezor_ge25519_add(&c, &a, &b, 0);
     set256_modm(s2, 0);
-    ge25519_scalarmult_base_wrapper(&a, s2);
+    trezor_ge25519_scalarmult_base_wrapper(&a, s2);
     ck_assert_int_eq(ge25519_eq(&a, &c), 1);
   }
 }
@@ -1144,7 +1144,7 @@ START_TEST(test_xmr_gen_range_sig) {
     ge25519_set_neutral(&Ctmp);
     for (int j = 0; j < XMR_ATOMS; j++) {
       ge25519_unpack_vartime(&Cb, sig.Ci[j]);
-      ge25519_add(&Ctmp, &Ctmp, &Cb, 0);
+      trezor_ge25519_add(&Ctmp, &Ctmp, &Cb, 0);
     }
 
     ck_assert_int_eq(ge25519_eq(&C, &Ctmp), 1);
@@ -1155,7 +1155,7 @@ START_TEST(test_xmr_gen_range_sig) {
 
     for (int j = 0; j < XMR_ATOMS; j++) {
       ge25519_unpack_vartime(&P1, sig.Ci[j]);
-      ge25519_add(&P2, &P1, &Ch, 1);
+      trezor_ge25519_add(&P2, &P1, &Ch, 1);
       expand256_modm(s, sig.asig.s0[j], 32);
 
       xmr_add_keys2(&LL, s, ee, &P1);

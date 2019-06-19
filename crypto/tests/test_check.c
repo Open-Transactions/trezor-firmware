@@ -6496,7 +6496,7 @@ START_TEST(test_ed25519_modl_sub) {
 }
 END_TEST
 
-START_TEST(test_ge25519_double_scalarmult_vartime2) {
+START_TEST(test_trezor_ge25519_double_scalarmult_vartime2) {
   char tests[][5][65] = {
       {"c537208ed4985e66e9f7a35c9a69448a732ba93960bbbd2823604f7ae9e3ed08",
        "365233e5af17c8888d5ce508787464f4642e91a6212b1b104e6c3769535601b1",
@@ -6613,7 +6613,7 @@ START_TEST(test_ge25519_double_scalarmult_vartime2) {
     ge25519_unpack_negative_vartime(&B, fromhex(tests[i][3]));
     curve25519_neg(B.x, B.x);
     curve25519_neg(B.t, B.t);
-    ge25519_double_scalarmult_vartime2(&R, &A, a, &B, b);
+    trezor_ge25519_double_scalarmult_vartime2(&R, &A, a, &B, b);
     ge25519_pack(buff, &R);
     ck_assert_mem_eq(buff, fromhex(tests[i][4]), 32);
   }
@@ -8733,7 +8733,7 @@ Suite *test_suite(void) {
 
 #if USE_MONERO
   tc = tcase_create("ed25519_ge");
-  tcase_add_test(tc, test_ge25519_double_scalarmult_vartime2);
+  tcase_add_test(tc, test_trezor_ge25519_double_scalarmult_vartime2);
   suite_add_tcase(s, tc);
 #endif
 
@@ -8815,8 +8815,8 @@ Suite *test_suite(void) {
   tcase_add_test(tc, test_xmr_curve25519_expand_reduce);
   tcase_add_test(tc, test_xmr_ge25519_base);
   tcase_add_test(tc, test_xmr_ge25519_check);
-  tcase_add_test(tc, test_xmr_ge25519_scalarmult_base_wrapper);
-  tcase_add_test(tc, test_xmr_ge25519_scalarmult);
+  tcase_add_test(tc, test_xmr_trezor_ge25519_scalarmult_base_wrapper);
+  tcase_add_test(tc, test_xmr_trezor_ge25519_scalarmult);
   tcase_add_test(tc, test_xmr_ge25519_ops);
   suite_add_tcase(s, tc);
 

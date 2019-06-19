@@ -54,12 +54,12 @@ void xmr_gen_range_sig_ex(xmr_range_sig_t *sig, ge25519 *C, bignum256modm mask,
                                 // pass this to receiver...
     xmr_random_scalar(alpha[ii]);
 
-    ge25519_scalarmult_base_niels(&L, ge25519_niels_base_multiples, alpha[ii]);
-    ge25519_scalarmult_base_niels(&C_tmp, ge25519_niels_base_multiples, ai[ii]);
+    trezor_ge25519_scalarmult_base_niels(&L, ge25519_niels_base_multiples, alpha[ii]);
+    trezor_ge25519_scalarmult_base_niels(&C_tmp, ge25519_niels_base_multiples, ai[ii]);
 
     // C_tmp += &Zero if BB(ii) == 0 else &C_h
-    ge25519_add(&C_tmp, &C_tmp, BB(ii) == 0 ? &Zero : &C_h, 0);
-    ge25519_add(&C_acc, &C_acc, &C_tmp, 0);
+    trezor_ge25519_add(&C_tmp, &C_tmp, BB(ii) == 0 ? &Zero : &C_h, 0);
+    trezor_ge25519_add(&C_acc, &C_acc, &C_tmp, 0);
 
     // Set Ci[ii] to sigs
     ge25519_pack(sig->Ci[ii], &C_tmp);
@@ -68,7 +68,7 @@ void xmr_gen_range_sig_ex(xmr_range_sig_t *sig, ge25519 *C, bignum256modm mask,
       xmr_random_scalar(si);
       xmr_hash_ge25519_to_scalar(c, &L);
 
-      ge25519_add(&C_tmp, &C_tmp, &C_h, 1);  // Ci[ii] -= c_h
+      trezor_ge25519_add(&C_tmp, &C_tmp, &C_h, 1);  // Ci[ii] -= c_h
       xmr_add_keys2_vartime(&L, si, c, &C_tmp);
 
       // Set s1[ii] to sigs

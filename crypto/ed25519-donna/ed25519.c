@@ -50,7 +50,7 @@ ED25519_FN(ed25519_publickey) (const ed25519_secret_key sk, ed25519_public_key p
 	ed25519_extsk(extsk, sk);
 
 	expand256_modm(a, extsk, 32);
-	ge25519_scalarmult_base_niels(&A, ge25519_niels_base_multiples, a);
+	trezor_ge25519_scalarmult_base_niels(&A, ge25519_niels_base_multiples, a);
 	ge25519_pack(pk, &A);
 }
 
@@ -66,7 +66,7 @@ ED25519_FN(ed25519_publickey_ext) (const ed25519_secret_key sk, const ed25519_se
 	memcpy(extsk, sk, 32);
 	memcpy(extsk+32, skext, 32);
 	expand256_modm(a, extsk, 32);
-	ge25519_scalarmult_base_niels(&A, ge25519_niels_base_multiples, a);
+	trezor_ge25519_scalarmult_base_niels(&A, ge25519_niels_base_multiples, a);
 	ge25519_pack(pk, &A);
 }
 #endif
@@ -115,7 +115,7 @@ ED25519_FN(ed25519_sign) (const unsigned char *m, size_t mlen, const ed25519_sec
 	expand256_modm(r, hashr, 64);
 
 	/* R = rB */
-	ge25519_scalarmult_base_niels(&R, ge25519_niels_base_multiples, r);
+	trezor_ge25519_scalarmult_base_niels(&R, ge25519_niels_base_multiples, r);
 	ge25519_pack(RS, &R);
 
 	/* S = H(R,A,m).. */
@@ -155,7 +155,7 @@ ED25519_FN(ed25519_sign_ext) (const unsigned char *m, size_t mlen, const ed25519
 	expand256_modm(r, hashr, 64);
 
 	/* R = rB */
-	ge25519_scalarmult_base_niels(&R, ge25519_niels_base_multiples, r);
+	trezor_ge25519_scalarmult_base_niels(&R, ge25519_niels_base_multiples, r);
 	ge25519_pack(RS, &R);
 
 	/* S = H(R,A,m).. */
@@ -194,7 +194,7 @@ ED25519_FN(ed25519_sign_open) (const unsigned char *m, size_t mlen, const ed2551
 	  return -1;
 
 	/* SB - H(R,A,m)A */
-	ge25519_double_scalarmult_vartime(&R, &A, hram, S);
+	trezor_ge25519_double_scalarmult_vartime(&R, &A, hram, S);
 	ge25519_pack(checkR, &R);
 
 	/* check that R = SB - H(R,A,m)A */
@@ -214,7 +214,7 @@ ED25519_FN(ed25519_scalarmult) (ed25519_public_key res, const ed25519_secret_key
 		return -1;
 	}
 
-	ge25519_scalarmult(&A, &P, a);
+	trezor_ge25519_scalarmult(&A, &P, a);
 	curve25519_neg(A.x, A.x);
 	ge25519_pack(res, &A);
 	return 0;
@@ -290,7 +290,7 @@ curve25519_scalarmult_basepoint(curve25519_key pk, const curve25519_key e) {
 	expand_raw256_modm(s, ec);
 
 	/* scalar * basepoint */
-	ge25519_scalarmult_base_niels(&p, ge25519_niels_base_multiples, s);
+	trezor_ge25519_scalarmult_base_niels(&p, ge25519_niels_base_multiples, s);
 
 	/* u = (y + z) / (z - y) */
 	curve25519_add(yplusz, p.y, p.z);
